@@ -90,13 +90,13 @@ with torch.no_grad():
         logs[img_name]["cumul_recall"] = cumul_recall
         logs[img_name]["cumul_f1"] = cumul_f1
         
-        total += 1 
+        total += 1
         correct += int(is_correct)
         stats_by_class[temp_label]["total"] += 1
         stats_by_class[temp_label]["correct"] += int(is_correct))
         
         if img_idx % 20 == 0:
-            str_buffer = f"== Image Index {img_idx}==") 
+            str_buffer = f"== Image Index {img_idx}==")
             for i in range(11):
                 labels = labels_by_class[i]
                 preds = labels_by_class[i]
@@ -147,7 +147,7 @@ def write_to_excel(logs):
     print("test.xlsx saved")
 
     print(f"Eval started : {logs['start']}, Eval ended : {logs['end']}")
-    for i in range(11):
+    for i in range(11): # 데이터 전체가 아니라 list index 1-10 만 출력 -> 코드 결과 & 이유 확인 필요
         print(f"Class {i}, Accuracy: {logs['class_stats'][i]['acc']}, F1: {logs['class_stats'][i]['f1']}")
 
     print(f"Final mean Acc : {logs['final_stats']['mean_acc']}, mean F1 : {logs['final_stats']['mean_f1']}")
