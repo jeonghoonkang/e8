@@ -8,6 +8,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import torch.nn as nn 
 import argparse
+import json # 패키지 추가 220429
+
 def getTimestamp():
     import time, datetime
     timezone = 60*60*9 # seconds * minutes * utc + 9
@@ -89,14 +91,18 @@ with torch.no_grad():
         logs[img_name]["cumul_precision"] = cumul_precision
         logs[img_name]["cumul_recall"] = cumul_recall
         logs[img_name]["cumul_f1"] = cumul_f1
-        
+
+        # total / correct 변수 초기값 할당 220429
+        total = 0
+        correct = 0
+
         total += 1
         correct += int(is_correct)
         stats_by_class[temp_label]["total"] += 1
-        stats_by_class[temp_label]["correct"] += int(is_correct))
+        stats_by_class[temp_label]["correct"] += int(is_correct)
         
         if img_idx % 20 == 0:
-            str_buffer = f"== Image Index {img_idx}==")
+            str_buffer = f"== Image Index {img_idx}=="
             for i in range(11):
                 labels = labels_by_class[i]
                 preds = labels_by_class[i]
@@ -114,7 +120,7 @@ with torch.no_grad():
     for i in range(11):
         labels = labels_by_class[i]
         preds = labels_by_class[i]
-        logs["class_stats"][i] = {"acc": accuracy_score(labels, preds), "f1":f1_score(labels, preds)})
+        logs["class_stats"][i] = {"acc": accuracy_score(labels, preds), "f1":f1_score(labels, preds)}
     
     mean_acc = np.mean(list(logs["class_stats"][i]["acc"] for i in range(11)))
     mean_f1 = np.mean(list(logs["class_stats"][i]["f1"] for i in range(11)))
@@ -138,7 +144,7 @@ def write_to_excel(logs):
             predict, label, cumul_prec, cumul_recall, cumul_f1, cumul_correct, cumul_total = value["predict"]
 
             try:
-                ws.append([img_name, str(value["predict"]), str(value["label"), str(value["cumul_precision"]), str(value["cumul_recall"), str(value["cumul_f1"]), str(value["cumul_correct"]), str(value["cumul_total"]))
+                ws.append([img_name, str(value["predict"]), str(value["label"]), str(value["cumul_precision"]), str(value["cumul_recall"]), str(value["cumul_f1"]), str(value["cumul_correct"]), str(value["cumul_total"])])
 
             except:
                 continue

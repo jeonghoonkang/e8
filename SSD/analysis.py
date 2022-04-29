@@ -70,9 +70,12 @@ def write_to_excel(metrics):
     conf_by_class = {}
     iou_by_class = {}
 
-    wb = Workbook()
-    ws = wb.active
-    ws.append(["image_name", "correct", "gt_label", "gt_bbox", "label","bbox", "conf", "iou", "cumul_average_iou", "cumul_average_ap"])
+    # 220429 변수 추가
+    analysis_result = []
+
+    # wb = Workbook()
+    # ws = wb.active
+    # ws.append(["image_name", "correct", "gt_label", "gt_bbox", "label","bbox", "conf", "iou", "cumul_average_iou", "cumul_average_ap", "", 'Class_name', 'Average IoU', 'Average Precision', "", 'mAP', 'mIoU'])
     for image_name, result in tqdm(analysis(metrics).items(), desc="image analysis"):
         if isinstance(result, int):
             continue
@@ -95,7 +98,8 @@ def write_to_excel(metrics):
 
                     cumul_average_iou = np.mean(iou_by_class[class_name])
                     cumul_average_ap = average_precision_score(is_correct_by_class[class_name], conf_by_class[class_name])
-                    ws.append([image_name, str(stats["correct"][i]), str(stats["gt_label"][i]), str(stats['gt_bbox'][i]), str(stats['label'][i]), str(stats['bbox'][i]), str(stats['conf'][i]), str(stats['iou'][i]), str(cumul_average_iou), str(cumul_average_ap)])
+                    # ws.append([image_name, str(stats["correct"][i]), str(stats["gt_label"][i]), str(stats['gt_bbox'][i]), str(stats['label'][i]), str(stats['bbox'][i]), str(stats['conf'][i]), str(stats['iou'][i]), str(cumul_average_iou), str(cumul_average_ap)])
+                    analysis_result.append([image_name, str(stats["correct"][i]), str(stats["gt_label"][i]), str(stats['gt_bbox'][i]), str(stats['label'][i]), str(stats['bbox'][i]), str(stats['conf'][i]), str(stats['iou'][i]), str(cumul_average_iou), str(cumul_average_ap)])
 
                 except:
                     continue
@@ -104,6 +108,7 @@ def write_to_excel(metrics):
     mAP = 0
     mIoU = 0
     count = 0
+    cnt = 0
     for class_name in is_correct_by_class:
         is_cor = is_correct_by_class[class_name]
         conf = conf_by_class[class_name]
@@ -113,10 +118,23 @@ def write_to_excel(metrics):
         class_average_ap = average_precision_score(is_cor, conf)
 
         print(f"Class: {class_name}, Average IoU: {class_average_iou}, Average Precision: {class_average_ap}")
+        analysis_result[i].extend(["", class_name, class_average_iou, class_average_ap])
+        cnt+=1
+
+
         mIoU += class_average_iou
         mAP += class_average_ap
         count += 1
     print(f"Final mAP :{mAP/count}, Final mIoU : {mIoU/count}")
-    wb.save("test.xlsx")
+    analysis_result[0].extend(["", mAP/count, mIoU/count])
+
+    wb = Workbook()
+    ws = wb.active
+    ws.append(["image_name", "correct", "gt_label", "gt_bbox", "label","bbox", "conf", "iou", "cumul_average_iou", "cumul_average_ap", "", 'Class_name', 'Average IoU', 'Average Precision', "", 'mAP', 'mIoU'])
+    for list_elements in analysis_result:
+        ws.append(list_elements)
+    # wb.save("test.xlsx")
+    wb.save("SSD_test_result.xlsx")
+
 
 write_to_excel(metrics)
