@@ -130,7 +130,7 @@ def write_to_excel(metrics):
 
     wb = Workbook() # 220429 위치 이동
     ws = wb.active # 220429 위치 이동
-    ws.append(["image_name", "correct", "gt_label", "gt_bbox", "label","bbox", "conf", "iou", "", "class_name", "average mIoU", "average mAP", "", "mIoU", "mAP"])
+    ws.append(["image_name", "correct", "gt_label", "gt_bbox", "label","bbox", "conf", "iou", "", "class_name", "Average IoU", "Average Precision", "", "mIoU", "mAP"])
     for list_elements in analysis_result:
         ws.append(list_elements)
 

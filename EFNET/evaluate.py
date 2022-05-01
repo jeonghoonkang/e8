@@ -137,14 +137,16 @@ def write_to_excel(logs):
 
     wb = Workbook()
     ws = wb.active
-    ws.append(["image_name", "predict", "label", "cumul_precision", "cumul_recall", "cumul_f1", "cumul_correct", "cumul_total"])
+    ws.append(["image_name", "predict", "label", "cumul_precision", "cumul_recall", "cumul_f1", "cumul_correct", "cumul_total", "", "Class", "Accuracy", "F1", "", "mean Acc", "mean F1"])
+    analysis_result = []
     for key, value in logs.items():
         if key not in ["final_stats", "end", "start", "class_stats"]:
             img_name = key
             predict, label, cumul_prec, cumul_recall, cumul_f1, cumul_correct, cumul_total = value["predict"]
 
             try:
-                ws.append([img_name, str(value["predict"]), str(value["label"]), str(value["cumul_precision"]), str(value["cumul_recall"]), str(value["cumul_f1"]), str(value["cumul_correct"]), str(value["cumul_total"])])
+                # ws.append([img_name, str(value["predict"]), str(value["label"]), str(value["cumul_precision"]), str(value["cumul_recall"]), str(value["cumul_f1"]), str(value["cumul_correct"]), str(value["cumul_total"])])
+                analysis_result.append([img_name, str(value["predict"]), str(value["label"]), str(value["cumul_precision"]), str(value["cumul_recall"]), str(value["cumul_f1"]), str(value["cumul_correct"]), str(value["cumul_total"])])
 
             except:
                 continue
@@ -153,9 +155,18 @@ def write_to_excel(logs):
     print("test.xlsx saved")
 
     print(f"Eval started : {logs['start']}, Eval ended : {logs['end']}")
-    for i in range(11): # 데이터 전체가 아니라 list index 1-10 만 출력 -> 코드 결과 & 이유 확인 필요
+
+    cnt = 0
+
+    for i in range(len(logs)): # 데이터 전체가 아니라 list index 1-10 만 출력 -> 코드 결과 & 이유 확인 필요
         print(f"Class {i}, Accuracy: {logs['class_stats'][i]['acc']}, F1: {logs['class_stats'][i]['f1']}")
+        analysis_result[cnt].extend(["", logs['class_stats'][i]['acc'], logs['class_stats'][i]['f1']])
 
     print(f"Final mean Acc : {logs['final_stats']['mean_acc']}, mean F1 : {logs['final_stats']['mean_f1']}")
+    analysis_result[1].extend([logs['final_stats']['mean_acc'], logs['final_stats']['mean_f1']])
+
+    for row in analysis_result:
+        ws.append(analysis_result)
+    wb.save("SSD_test_result.xlsx")
 
 write_to_excel(logs)

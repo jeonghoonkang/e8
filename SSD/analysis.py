@@ -75,7 +75,6 @@ def write_to_excel(metrics):
 
     # wb = Workbook()
     # ws = wb.active
-    # ws.append(["image_name", "correct", "gt_label", "gt_bbox", "label","bbox", "conf", "iou", "cumul_average_iou", "cumul_average_ap", "", 'Class_name', 'Average IoU', 'Average Precision', "", 'mAP', 'mIoU'])
     for image_name, result in tqdm(analysis(metrics).items(), desc="image analysis"):
         if isinstance(result, int):
             continue
